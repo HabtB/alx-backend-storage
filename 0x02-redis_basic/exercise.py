@@ -80,3 +80,18 @@ class Cache:
         """ Converts data back to desired int format
         """
         return self.get(key, int)
+
+    def replay(method: Callable):
+        qualified_name = method.__qualname__
+        
+        nputs_key = qualified_name + ':inputs'
+        outputs_key = qualified_name + ':outputs'
+
+        input_data = cache._redis.lrange(inputs_key, 0, -1)
+        output_data = cache._redis.lrange(outputs_key, 0, -1)
+
+        num_calls = len(input_data)
+        print("{} was called {} times:".format(qualified_name, num_calls))
+
+        for inputs, output in zip(input_data, output_data):
+            print(f"{}{} -> {}".format(qualified_name, inputs, output))
